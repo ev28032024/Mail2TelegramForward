@@ -1,0 +1,6 @@
+# MailToTelegramForwarder Dependencies
+# Python 3.10+ required
+
+python-telegram-bot>=21.0
+imaplib2>=3.6
+beautifulsoup4>=4.12
