@@ -37,30 +37,3 @@ nano myconfig.conf
 ```bash
 python mailToTelegramForwarder.py -c myconfig.conf
 ```
-
----
-
-## 🔧 Advanced Configuration
-
-### IMAP Search Filters
-
-```ini
-# All unread emails (default)
-search: (UID ${lastUID}:* UNSEEN)
-
-# Filter by sender
-search: (UID ${lastUID}:* UNSEEN HEADER From "@company.com")
-
-# Filter by subject
-search: (UID ${lastUID}:* UNSEEN HEADER Subject "Alert")
-
-# All emails (including read)
-search: (UID ${lastUID}:*)
-```
-
-### Ignore Tracking Pixels
-
-```ini
-# Ignore common 1x1 tracking images
-ignore_inline_image: (spacer\.gif|pixel\.png|tracking\.)
-```
