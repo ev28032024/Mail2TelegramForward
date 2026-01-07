@@ -11,7 +11,6 @@
 |  **Attachments** | Forward files and embedded images |
 |  **HTML Support** | Rich formatting preserved in Telegram messages |
 |  **Secure** | Credentials masked in logs, no data stored |
-|  **Docker Ready** | Systemd service or Docker deployment |
 |  **Lightweight** | Single Python script, minimal dependencies |
 
 ---
