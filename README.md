@@ -40,27 +40,6 @@ python mailToTelegramForwarder.py -c myconfig.conf
 
 ---
 
-## 🐳 Deployment
-
-### Systemd Service
-
-```bash
-# Install
-sudo cp mailToTelegramForwarder.py /opt/mailToTelegramForwarder/
-sudo cp conf/mailToTelegramForwarder.conf /etc/mail-to-telegram-forwarder/
-sudo cp systemd/mail-to-telegram-forwarder@.service /etc/systemd/system/
-
-# Enable and start
-sudo systemctl daemon-reload
-sudo systemctl enable --now mail-to-telegram-forwarder@mailToTelegramForwarder
-
-# Check status
-sudo systemctl status mail-to-telegram-forwarder@mailToTelegramForwarder
-sudo journalctl -fu mail-to-telegram-forwarder@mailToTelegramForwarder
-```
-
----
-
 ## 🔧 Advanced Configuration
 
 ### IMAP Search Filters
