@@ -26,7 +26,6 @@ pip install -r requirements.txt
 ### 2. Configure
 
 ```bash
-# Copy and edit the config file
 nano mailToTelegramForwarder.conf
 ```
 
