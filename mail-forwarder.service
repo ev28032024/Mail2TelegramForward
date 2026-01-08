@@ -1,0 +1,14 @@
+[Unit]
+Description=Mail to Telegram Forwarder
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/MailToTelegramForwarder
+ExecStart=/bin/bash -c 'source .venv/bin/activate && python mailToTelegramForwarder.py -c mailToTelegramForwarder.conf'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

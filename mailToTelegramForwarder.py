@@ -554,12 +554,13 @@ class TelegramBot:
                 # 2. Convert standard quote markers (>) to simple text or remove
                 quote_content = re.sub(r'^\s*>\s*', '', quote_content, flags=re.MULTILINE)
                 
-                # 3. Compact newlines in history
-                quote_content = re.sub(r'\n\s*\n', '\n', quote_content)
+                # 3. Compact newlines in history (max 1 line break)
+                quote_content = re.sub(r'\n\s*\n+', '\n', quote_content)
+                quote_content = re.sub(r'\n{2,}', '\n', quote_content)
 
                 # 4. Inject "Beautiful Separators" and Clean Headers
-                # Separator line: ━━━━━━━━━━━━━━━━
-                separator = "\n\n<b>━━━━━━━━━━━━━━━━</b>\n"
+                # Separator line: ━━━━━━━━━━━━━━
+                separator = "\n<b>━━━━━━━━━━━━━━</b>\n"
 
                 # Helper to parse and shift date
                 def reformat_header(match):
@@ -584,7 +585,6 @@ class TelegramBot:
                             dt_msk = dt - timedelta(hours=2)
                             formatted_date = dt_msk.strftime('%d.%m.%Y %H:%M MSK')
                             
-                            # Replace the date part in the content string with the new formatted date
                             new_content = clean_content.replace(date_str, formatted_date)
                             return f'{separator}<b>{new_content}</b>\n'
                     except Exception:
@@ -642,9 +642,15 @@ class TelegramBot:
                     quote_content, count=1
                 )
 
-                # Ensure we close the quote
-                # Insert a placeholder for a blank line that survives the whitespace cleanup
-                tg_msg = f"{parts[0]}||QUOTE_SEP||<blockquote expandable>{quote_content}</blockquote>"
+                # Final cleanup: remove multiple newlines and trailing spaces
+                quote_content = re.sub(r'\n{2,}', '\n', quote_content)
+                quote_content = re.sub(r'\s*\n\s*$', '', quote_content)  # trailing newlines
+                quote_content = re.sub(r'(\n\s*){2,}$', '', quote_content)  # multiple trailing
+                quote_content = quote_content.rstrip()  # final strip
+
+                # Ensure we close the quote with visible gap before it
+                main_text = parts[0].rstrip()
+                tg_msg = f"{main_text}\n\u200B\n<blockquote expandable>{quote_content}</blockquote>"
             # ----------------------------------------
 
             # remove empty links
@@ -663,9 +669,9 @@ class TelegramBot:
 
             # preserve NBSPs
             tg_msg = re.sub(r'&nbsp;', ' ', tg_msg, flags=re.IGNORECASE)
-            
-            # Restore the blank line before the quote
-            tg_msg = tg_msg.replace('||QUOTE_SEP||', '\n')
+            # Clean whitespace inside blockquote
+            tg_msg = re.sub(r'(<blockquote[^>]*>)\s+', r'\1', tg_msg)  # start
+            tg_msg = re.sub(r'\s+(</blockquote>)', r'\1', tg_msg)  # end
 
         except Exception as ex:
             logging.critical("Error cleaning HTML: %s" % str(ex))
@@ -1200,12 +1206,14 @@ class Mail:
             if message_type == MailDataType.HTML:
                 mail_from = html.escape(mail_from, quote=True)
                 subject = html.escape(subject, quote=True)
-                # Modern HTML Header
-                email_text = f"<b>From:</b> {mail_from}\n<b>Subject:</b> {subject}\n\n"
+                # Separator + Header
+                email_text = "────── ✦ ──────\n"
+                email_text += f"<b>From:</b> {mail_from}\n<b>Subject:</b> {subject}\n\n"
             else:
                 subject = escape_markdown(text=subject, version=self.config.tg_markdown_version)
                 mail_from = escape_markdown(text=mail_from, version=self.config.tg_markdown_version)
-                email_text = f"*From:* {mail_from}\n*Subject:* {subject}\n\n"
+                email_text = "────── ✦ ──────\n"
+                email_text += f"*From:* {mail_from}\n*Subject:* {subject}\n\n"
             
             email_text += content + " " + attachments_summary
 
@@ -1222,9 +1230,9 @@ class Mail:
                     formatted_date = dt_msk.strftime('%d.%m.%Y %H:%M MSK')
                     
                     if message_type == MailDataType.HTML:
-                        email_text += f"\n\n📅 <b>{formatted_date}</b>"
+                        email_text += f"\n\n📅 <b>{formatted_date}</b>\n────── ✦ ──────"
                     else:
-                        email_text += f"\n\n📅 *{formatted_date}*"
+                        email_text += f"\n\n📅 *{formatted_date}*\n────── ✦ ──────"
             except Exception as e:
                 logging.warning(f"Failed to parse email date: {e}")
 
