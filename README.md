@@ -27,12 +27,11 @@ pip install -r requirements.txt
 
 ```bash
 # Copy and edit the config file
-cp conf/mailToTelegramForwarder.conf myconfig.conf
-nano myconfig.conf
+nano mailToTelegramForwarder.conf
 ```
 
 ### 3. Run
 
 ```bash
-python mailToTelegramForwarder.py -c myconfig.conf
+python mailToTelegramForwarder.py -c mailToTelegramForwarder.conf
 ```
